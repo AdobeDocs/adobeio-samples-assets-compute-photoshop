@@ -4,7 +4,7 @@ const { worker, SourceCorruptError } = require('@adobe/asset-compute-sdk')
 const fs = require('fs').promises
 const { downloadFile } = require('@adobe/httptransfer')
 const { Files } = require('@adobe/aio-sdk')
-const { stringParameters } = require('../utils')
+const { v4: uuid4 } = require('uuid')
 
 exports.main = worker(async (source, rendition, params) => {
     // Example of how to throw a standard asset compute error
@@ -14,14 +14,14 @@ exports.main = worker(async (source, rendition, params) => {
         throw new SourceCorruptError('source file is empty')
     }
 
-    console.log(JSON.stringify(source))
     const accessToken = params.auth && params.auth.accessToken
+    const imageId = uuid4()
 
     const files = await Files.init()
-    await files.copy(source.path, 'autotone/source.png', { localSrc: true })
-    const downloadUrl = await files.generatePresignURL('autotone/source.png', { expiryInSeconds: 600})
-    const uploadUrl = await files.generatePresignURL('autotone/rendition.png', { expiryInSeconds: 600, permissions: 'rwd' })
-    
+    await files.copy(source.path, `${imageId}/source.png`, { localSrc: true })
+    const downloadUrl = await files.generatePresignURL(`${imageId}/source.png`, { expiryInSeconds: 600})
+    const uploadUrl = await files.generatePresignURL(`${imageId}/rendition.png`, { expiryInSeconds: 600, permissions: 'rwd' })
+
     const apiEndpoint = 'https://image.adobe.io/lrService/autoTone'
 
     const options = {
@@ -68,8 +68,10 @@ exports.main = worker(async (source, rendition, params) => {
       if (outputs.length > 0 && outputs[0].status === 'succeeded') {
         processed = true
       }
-      
     }
 
     await downloadFile(uploadUrl, rendition.path)
+
+    // clean up files processing folder
+    await files.delete(`${imageId}/`)
 })

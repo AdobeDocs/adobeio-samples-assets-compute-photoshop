@@ -4,6 +4,7 @@ const { worker, SourceCorruptError } = require('@adobe/asset-compute-sdk')
 const fs = require('fs').promises
 const { downloadFile } = require('@adobe/httptransfer')
 const { Files } = require('@adobe/aio-sdk')
+const { v4: uuid4 } = require('uuid')
 
 exports.main = worker(async (source, rendition, params) => {
     // Example of how to throw a standard asset compute error
@@ -13,13 +14,13 @@ exports.main = worker(async (source, rendition, params) => {
         throw new SourceCorruptError('source file is empty')
     }
 
-    console.log(source.path)
     let accessToken = params.auth && params.auth.accessToken
+    const imageId = uuid4()
 
     const files = await Files.init()
-    await files.copy(source.path, 'cutout/file.png', { localSrc: true })
-    const downloadUrl = await files.generatePresignURL('cutout/file.png', { expiryInSeconds: 600})
-    const uploadUrl = await files.generatePresignURL('cutout/rendition.png', { expiryInSeconds: 600, permissions: 'rwd' })
+    await files.copy(source.path, `${imageId}/source.png`, { localSrc: true })
+    const downloadUrl = await files.generatePresignURL(`${imageId}/source.png`, { expiryInSeconds: 600})
+    const uploadUrl = await files.generatePresignURL(`${imageId}/rendition.png`, { expiryInSeconds: 600, permissions: 'rwd' })
     
     const apiEndpoint = 'https://image.adobe.io/sensei/cutout'
 
@@ -70,4 +71,7 @@ exports.main = worker(async (source, rendition, params) => {
     }
 
     await downloadFile(uploadUrl, rendition.path)
+
+    // clean up files processing folder
+    await files.delete(`${imageId}/`)
 })
