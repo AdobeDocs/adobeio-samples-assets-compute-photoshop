@@ -54,7 +54,22 @@ exports.main = worker(async (source, rendition, params) => {
     }
     const content = await res.json()
 
-    await new Promise(r => setTimeout(r, 5000))
+    if (!content._links || !content._links.self || !content._links.self.href) {
+      throw new Error('Photoshop API did not return expected value.')
+    }
+
+    let processed = false
+    while (!processed) {
+      // sleep 1s before the enterring loop
+      await new Promise(r => setTimeout(r, 1000))
+      const statusRes = await fetch(content._links.self.href, { headers: reqHeaders })
+      const statusContent = await statusRes.json()
+      const outputs = statusContent.outputs
+      if (outputs.length > 0 && outputs[0].status === 'succeeded') {
+        processed = true
+      }
+      
+    }
 
     await downloadFile(uploadUrl, rendition.path)
 })

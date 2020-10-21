@@ -37,14 +37,16 @@ exports.main = worker(async (source, rendition, params) => {
       }
     }
 
+    const reqHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+      'x-api-key': params.apiKey
+    }
+
     // fetch content from external api endpoint
     const res = await fetch(apiEndpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'x-api-key': params.apiKey
-      },
+      headers: reqHeaders,
       body: JSON.stringify(options)
     })
     if (!res.ok) {
@@ -52,7 +54,20 @@ exports.main = worker(async (source, rendition, params) => {
     }
     const content = await res.json()
 
-    await new Promise(r => setTimeout(r, 5000))
+    if (!content._links || !content._links.self || !content._links.self.href) {
+      throw new Error('Photoshop API did not return expected value.')
+    }
+
+    let processed = false
+    while (!processed) {
+      // sleep 1s before the enterring loop
+      await new Promise(r => setTimeout(r, 1000))
+      const statusRes = await fetch(content._links.self.href, { headers: reqHeaders })
+      const statusContent = await statusRes.json()
+      if (statusContent.status === 'succeeded') {
+        processed = true
+      }
+    }
 
     await downloadFile(uploadUrl, rendition.path)
 })
