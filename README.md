@@ -1,4 +1,4 @@
-# adobeio-samples-aemassets-customworker-photoshop
+# Project Firefly Samples - AEM Assets Compute Worker with Photoshop API
 
 This is a sample app that implements a custom Assets Compute Worker for AEM to generate cutout and automatically toned renditions by leveraging Photoshop, Lightroom / Camera Raw, and Sensei APIs.
 
