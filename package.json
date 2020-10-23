@@ -1,5 +1,5 @@
 {
-  "name": "adobeio-samples-aemassets-customworker-photoshop",
+  "name": "adobeio-samples-assets-compute-photoshop",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
