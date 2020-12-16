@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@adobe/asset-compute-sdk": "^2.2.1",
+    "@adobe/aio-lib-photoshop-api": "0.0.4-beta.2",
     "@adobe/aio-sdk": "^2.3.0",
     "node-fetch": "^2.6.0",
     "uuid": "^8.0.0"
@@ -14,7 +15,7 @@
     "@adobe/aio-cli-plugin-asset-compute": "^1.4.1"
   },
   "scripts": {
-    "test": "jest --passWithNoTests ./test && adobe-asset-compute test-worker",
+    "test": "adobe-asset-compute test-worker",
     "e2e": "jest --collectCoverage=false --testRegex ./e2e",
     "post-app-run": "adobe-asset-compute devtool"
   },
