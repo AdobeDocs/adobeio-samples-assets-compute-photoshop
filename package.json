@@ -20,6 +20,6 @@
     "post-app-run": "adobe-asset-compute devtool"
   },
   "engines": {
-    "node": "^10 || ^12"
+    "node": "^10 || ^12|| ^14"
   }
 }
