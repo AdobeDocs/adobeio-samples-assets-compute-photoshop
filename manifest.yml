@@ -5,7 +5,7 @@ packages:
       cutout:
         function: actions/cutout/index.js
         web: 'yes'
-        runtime: 'nodejs:12'
+        runtime: 'nodejs:14'
         limits:
           concurrency: 10
         inputs:
@@ -15,7 +15,7 @@ packages:
       autotone:
         function: actions/autotone/index.js
         web: 'yes'
-        runtime: 'nodejs:12'
+        runtime: 'nodejs:14'
         limits:
           concurrency: 10
         inputs:
