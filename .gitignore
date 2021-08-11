@@ -11,6 +11,7 @@ dist
 # Config
 config.json
 .env*
+.aio
 
 # Adobe I/O console config
 console.json
@@ -27,10 +28,15 @@ coverage
 .aws.tmp.creds.json
 .wskdebug.props.tmp
 
+# Parcel
+.parcel-cache
+
 # OSX
 .DS_Store
 
 # yeoman
 .yo-repository
 
+# logs folder for aio-run-detached
+logs
 

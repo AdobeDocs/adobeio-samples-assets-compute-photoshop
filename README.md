@@ -1,6 +1,6 @@
-# Project Firefly Samples - AEM Assets Compute Worker with Photoshop API
+# Project Firefly Samples - AEM Assets Compute Worker with Photoshop APIs
 
-This is a sample app that implements a custom Assets Compute Worker for AEM to generate cutout and automatically toned renditions by leveraging Photoshop, Lightroom / Camera Raw, and Sensei APIs.
+This is a sample app that implements a custom Assets Compute Worker for AEM to generate cutout and automatically toned renditions by leveraging Photoshop APIs.
 
 ## Pre-requisites
 
@@ -8,8 +8,7 @@ You will need a project on Adobe Developer Console that is enabled with the foll
 - I/O Management API
 - Asset Compute
 - I/O Events
-- Image Cutout - Creative Cloud Automation Services
-- Lightroom / Camera Raw API (JWT)
+- Adobe Photoshop API (Trial)
 
 ## Setup
 
