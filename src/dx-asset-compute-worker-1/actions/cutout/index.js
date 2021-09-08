@@ -14,41 +14,41 @@
  * API docs: https://adobedocs.github.io/photoshop-api-docs/#api-Sensei-cutout
  */
 
- 'use strict'
+'use strict'
 
- const { worker, SourceCorruptError } = require('@adobe/asset-compute-sdk')
- const fs = require('fs').promises
- const { Files } = require('@adobe/aio-sdk')
- const Photoshop = require('@adobe/aio-lib-photoshop-api')
- const { v4: uuid4 } = require('uuid')
- 
- exports.main = worker(async (source, rendition, params) => {
-     const stats = await fs.stat(source.path)
-     if (stats.size === 0) {
-         throw new SourceCorruptError('source file is empty')
-     }
- 
-     const files = await Files.init()
- 
-     const accessToken = params.auth && params.auth.accessToken
-     const orgId = params.auth && params.auth.orgId
-     // init Photoshop SDK client
-     const psClient = await Photoshop.init(orgId, params.apiKey, accessToken, files)
- 
-     // create a new directory in aio-lib-files with unique name
-     const imageId = uuid4()
-     const aioSourcePath = `${imageId}/source.png`
-     const aioRenditionPath = `${imageId}/rendition.png`
- 
-     await files.copy(source.path, aioSourcePath, { localSrc: true })
- 
-     // call Photoshop API to do cutout processing, and poll status until it's successful
-     const result = await psClient.createCutout(aioSourcePath, aioRenditionPath)
-     await result.pollUntilDone(1000)
- 
-     // download the rendition to local AEM Assets destination
-     await files.copy(aioRenditionPath, rendition.path, { localDest: true })
- 
-     // clean up files processing folder in aio-lib-files
-     await files.delete(`${imageId}/`)
- })
+const { worker, SourceCorruptError } = require('@adobe/asset-compute-sdk')
+const fs = require('fs').promises
+const { Files } = require('@adobe/aio-sdk')
+const Photoshop = require('@adobe/aio-lib-photoshop-api')
+const { v4: uuid4 } = require('uuid')
+
+exports.main = worker(async (source, rendition, params) => {
+    const stats = await fs.stat(source.path)
+    if (stats.size === 0) {
+        throw new SourceCorruptError('source file is empty')
+    }
+
+    const files = await Files.init()
+
+    const accessToken = params.auth && params.auth.accessToken
+    const orgId = params.auth && params.auth.orgId
+    // init Photoshop SDK client
+    const psClient = await Photoshop.init(orgId, params.apiKey, accessToken, files)
+
+    // create a new directory in aio-lib-files with unique name
+    const imageId = uuid4()
+    const aioSourcePath = `${imageId}/source.png`
+    const aioRenditionPath = `${imageId}/rendition.png`
+
+    await files.copy(source.path, aioSourcePath, { localSrc: true })
+
+    // call Photoshop API to do cutout processing, and poll status until it's successful
+    const result = await psClient.createCutout(aioSourcePath, aioRenditionPath)
+    await result.pollUntilDone(1000)
+
+    // download the rendition to local AEM Assets destination
+    await files.copy(aioRenditionPath, rendition.path, { localDest: true })
+
+    // clean up files processing folder in aio-lib-files
+    await files.delete(`${imageId}/`)
+})
